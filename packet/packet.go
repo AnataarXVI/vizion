@@ -105,3 +105,13 @@ func (p *Packet) Build() ([]byte, error) {
 	}
 	return buffer.Bytes(), nil
 }
+
+func (p *Packet) Bind_layer() {
+
+}
+
+func (p *Packet) AddLayers(layers ...layers.Layer) {
+	for i := len(layers) - 1; i >= 0; i-- {
+		p.Layers = append(p.Layers, layers[i])
+	}
+}
