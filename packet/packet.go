@@ -82,7 +82,7 @@ func (p *Packet) Bind_layer() {
 }
 
 func (p *Packet) AddLayers(layers ...layers.Layer) {
-	for i := len(layers) - 1; i >= 0; i-- {
-		p.Layers = append(p.Layers, layers[i])
+	for _, layer := range layers {
+		p.Layers = append(p.Layers, layer)
 	}
 }
