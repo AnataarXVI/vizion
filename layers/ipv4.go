@@ -21,7 +21,6 @@ type IP struct {
 	Padding    []byte `field:"Padding"`
 }
 
-// GetName retourne le nom du protocole.
 func (i *IP) GetName() string {
 	return "IPv4"
 }

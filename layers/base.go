@@ -4,15 +4,15 @@ import (
 	"bytes"
 )
 
-// Layer est une interface représentant une couche du paquet.
+// Layer is an interface representing a layer of the package.
 type Layer interface {
 	GetName() string
 	Build() []byte
 
-	// TODO: Ajouter la layer dans la liste layers du paquet
+	// TODO: Add the layer to the list of layers in the package
 	Dissect(*bytes.Buffer) *bytes.Buffer
 }
 
-// TODO: Ajouter une fonction bind_layer permettant de relier deux couches entres elles
+// TODO: Add a bind_layer function to link two layers together
 
-// TODO: Trouver un moyen de mettre des champs par défaut lors du build de paquet
+// TODO: Find a way to set default fields during package build

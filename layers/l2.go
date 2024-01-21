@@ -12,7 +12,7 @@ type Ether struct {
 	Type uint16           `field:"Type"`
 }
 
-// GetName retourne le nom du protocole.
+// GetName returns the protocol name.
 func (e *Ether) GetName() string {
 	return "Ethernet"
 }
@@ -67,12 +67,11 @@ type ARP struct {
 	Pdst   net.IP           `field:"Pdst"`
 }
 
-// GetName retourne le nom du protocole.
 func (a *ARP) GetName() string {
 	return "ARP"
 }
 
-// TODO: Prendre en compte l'ajout du paddind en fonction de la taille de la trame
+// TODO: Take into account the addition of paddind depending on frame size
 func (a *ARP) Build() []byte {
 	// Initiate the buffer
 	var buffer bytes.Buffer
