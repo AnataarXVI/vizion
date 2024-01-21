@@ -7,11 +7,44 @@ import (
 	"syscall"
 
 	"github.com/AnataarXVI/vizion/packet"
-	pcap "github.com/packetcap/go-pcap"
 )
+
+type RawSocket struct {
+	protocol uint16
+	fd       int
+	ifi      *net.Interface
+	addr     *syscall.SockaddrLinklayer
+}
 
 func htons(i uint16) uint16 {
 	return (i<<8)&0xff00 | i>>8
+}
+
+// Create and return a Raw socket
+func NewSocket(iface string) *RawSocket {
+
+	protocol := htons(syscall.ETH_P_IP)
+
+	// Open raw socket
+	fd, err := syscall.Socket(syscall.AF_PACKET, syscall.SOCK_RAW, int(protocol))
+	if err != nil {
+		fmt.Printf("error opening raw socket: %s", err)
+		return &RawSocket{}
+	}
+
+	// Retrieve network interface index
+	ifi, err := net.InterfaceByName(iface)
+	if err != nil {
+		fmt.Printf("error getting interface index: %s", err)
+		return &RawSocket{}
+	}
+
+	addr := syscall.SockaddrLinklayer{
+		Protocol: protocol,
+		Ifindex:  ifi.Index,
+	}
+
+	return &RawSocket{protocol: protocol, fd: fd, ifi: ifi, addr: &addr}
 }
 
 // Send sends the packet to a raw socket.
@@ -22,27 +55,13 @@ func Send(pkt packet.Packet, iface string) error {
 		return fmt.Errorf("error building packet: %s", err)
 	}
 
-	protocol := htons(syscall.ETH_P_IP)
-	// Open raw socket
-	fd, err := syscall.Socket(syscall.AF_PACKET, syscall.SOCK_RAW, int(protocol))
-	if err != nil {
-		return fmt.Errorf("error opening raw socket: %s", err)
-	}
-	defer syscall.Close(fd)
+	// Create the socket
+	s := NewSocket(iface)
 
-	// Retrieve network interface index
-	ifi, err := net.InterfaceByName(iface)
-	if err != nil {
-		return fmt.Errorf("error getting interface index: %s", err)
-	}
-
-	addr := syscall.SockaddrLinklayer{
-		Protocol: protocol,
-		Ifindex:  ifi.Index,
-	}
+	defer syscall.Close(s.fd)
 
 	// Send bytes to network interface
-	err = syscall.Sendto(fd, packetBytes, 0, &addr)
+	err = syscall.Sendto(s.fd, packetBytes, 0, s.addr)
 	if err != nil {
 		return fmt.Errorf("error sending packet: %s", err)
 	}
@@ -52,26 +71,25 @@ func Send(pkt packet.Packet, iface string) error {
 
 func Sniff(iface string) {
 
-	handle, err := pcap.OpenLive(iface, 1600, true, 0, true)
+	s := NewSocket(iface)
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	defer syscall.Close(s.fd)
 
 	for {
-		data, captureInfo, error := handle.ReadPacketData()
+		buffer := make([]byte, 1460)
+
+		n, error := syscall.Read(s.fd, buffer)
 
 		if error != nil {
 			log.Fatal(error)
 		}
 
-		_ = data
-		_ = captureInfo
-
 		// TODO: Insert the captured bytes in the Raw field of a packet and call up the dissection function
 		// TODO: Ensure that when Ctrl+C is pressed, the packets received are saved in a revised list at the end.
 
-		// packet.NewPacket(time.Now(), iface, data, data)
+		pkt := packet.Packet{Raw: buffer[:n]}
+
+		fmt.Println(pkt.Raw)
 	}
 
 }
