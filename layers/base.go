@@ -11,6 +11,8 @@ type Layer interface {
 
 	// TODO: Add the layer to the list of layers in the package
 	Dissect(*bytes.Buffer) *bytes.Buffer
+
+	BindLayer() Layer
 }
 
 // TODO: Add a bind_layer function to link two layers together

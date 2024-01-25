@@ -55,11 +55,50 @@ func ModifyField(layer layers.Layer, fieldName string, value interface{}) error 
 func (p *Packet) Dissect() {
 	var buffer bytes.Buffer
 
-	// FIXME: Not good, because the layers won't be defined beforehand. Hence the use of bind_layer
-	for _, layer := range p.Layers {
-		bytes_remaining := layer.Dissect(&buffer)
-		_ = bytes_remaining
+	// Insert Raw data into the buffer
+	binary.Write(&buffer, binary.BigEndian, p.Raw)
+
+	// While all bytes aren't convert into layers
+	for len(buffer.Bytes()) > 0 {
+
+		// Return Raw Layer if the buffer isn't nil and the next layer is Raw
+		// Missing !!!
+
+		// Start with the Ethernet layer
+		if len(p.Layers) == 0 {
+			// Add Ethernet layer into p.Layers
+			p.Layers = append(p.Layers, &layers.Ether{})
+			// Do the dissection
+			bytes_remaining := p.Layers[0].Dissect(&buffer)
+
+			// Call the BindLayer func to know the next layer
+			next_layer := p.Layers[0].BindLayer()
+			// Add the next Layer into p.Layers
+			if next_layer != nil && len(buffer.Bytes()) != 0 {
+				p.Layers = append(p.Layers, next_layer)
+			}
+			// Remove used bytes
+			buffer = *bytes_remaining
+
+		} else { // Other Layers
+			// Get the last layer of p.Layers
+			// Do the dissection
+			bytes_remaining := p.Layers[len(p.Layers)-1].Dissect(&buffer)
+			// Call the BindLayer func to know the next layer
+			next_layer := p.Layers[len(p.Layers)-1].BindLayer()
+
+			if next_layer != nil && len(buffer.Bytes()) != 0 {
+				p.Layers = append(p.Layers, next_layer)
+			} else { // If bytes are not dissected and there is no next layer
+				break
+			}
+			// Add the next Layer into p.Layers
+			p.Layers = append(p.Layers, next_layer)
+			// Remove used bytes
+			buffer = *bytes_remaining
+		}
 	}
+
 }
 
 // Build converts the packet into a sequence of bytes.
@@ -75,10 +114,6 @@ func (p *Packet) Build() ([]byte, error) {
 
 	}
 	return buffer.Bytes(), nil
-}
-
-func (p *Packet) Bind_layer() {
-
 }
 
 func (p *Packet) AddLayers(layers ...layers.Layer) {

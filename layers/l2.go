@@ -40,7 +40,22 @@ func (e *Ether) Build() []byte {
 
 // Deserialize will convert bytes into a layer
 func (e *Ether) Dissect(buf *bytes.Buffer) *bytes.Buffer {
+	e.Dst = buf.Next(6)
+	e.Src = buf.Next(6)
+	e.Type = binary.BigEndian.Uint16(buf.Next(2))
+
 	return buf
+}
+
+// BindLayer return the top
+func (e *Ether) BindLayer() Layer {
+
+	// If ARP
+	if e.Type == 0x0806 {
+		return &ARP{}
+	}
+
+	return nil
 }
 
 var Opcode = map[uint16]string{
@@ -98,5 +113,18 @@ func (a *ARP) Build() []byte {
 }
 
 func (a *ARP) Dissect(buf *bytes.Buffer) *bytes.Buffer {
+	a.Hwtype = binary.BigEndian.Uint16(buf.Next(2))
+	a.Ptype = binary.BigEndian.Uint16(buf.Next(2))
+	a.Hwlen = uint8(buf.Next(1)[0])
+	a.Plen = uint8(buf.Next(1)[0])
+	a.Opcode = binary.BigEndian.Uint16(buf.Next(2))
+	a.Hwsrc = buf.Next(int(a.Hwlen))
+	a.Psrc = buf.Next(int(a.Plen))
+	a.Hwdst = buf.Next(int(a.Hwlen))
+	a.Pdst = buf.Next(int(a.Plen))
 	return buf
+}
+
+func (a *ARP) BindLayer() Layer {
+	return nil
 }
