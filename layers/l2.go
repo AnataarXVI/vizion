@@ -43,7 +43,6 @@ func (e *Ether) Dissect(buf *bytes.Buffer) *bytes.Buffer {
 	e.Dst = buf.Next(6)
 	e.Src = buf.Next(6)
 	e.Type = binary.BigEndian.Uint16(buf.Next(2))
-
 	return buf
 }
 

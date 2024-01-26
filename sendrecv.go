@@ -74,16 +74,6 @@ func Sniff(iface string) {
 	s := NewSocket(iface)
 	defer syscall.Close(s.fd)
 
-	// pkt_list := make(chan []packet.Packet)
-
-	// c := make(chan os.Signal)
-	// signal.Notify(c, syscall.SIGINT)
-
-	// the original handling for that signal will be reinstalled, restoring the non-Go signal handler if any.
-	// defer signal.Reset(syscall.SIGINT)
-
-	//go func() {
-
 	for {
 		buffer := make([]byte, 1460)
 
@@ -92,20 +82,10 @@ func Sniff(iface string) {
 		if error != nil {
 			log.Fatal(error)
 		}
+		_ = n
 
 		// TODO: Insert the captured bytes in the Raw field of a packet and call up the dissection function
 		// TODO: Ensure that when Ctrl+C is pressed, the packets received are saved in a revised list at the end.
-
-		fmt.Println(buffer[:n])
-
-		//pkt_list <- packet.Packet{Raw: buffer[:n]}
-
 	}
 
-	// }()
-
-	// wait go routine to finish or signal received
-	// <-c
-	// list := <-pkt_list
-	// return list
 }

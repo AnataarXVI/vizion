@@ -34,6 +34,9 @@ func (p *Packet) Show() {
 
 // ModifyField dynamically modifies a layer field.
 func ModifyField(layer layers.Layer, fieldName string, value interface{}) error {
+
+	// TODO: Modify Raw field of the packet with the new value
+
 	layerValue := reflect.ValueOf(layer).Elem()
 	field := layerValue.FieldByName(fieldName)
 	if !field.IsValid() {
@@ -59,39 +62,64 @@ func (p *Packet) Dissect() {
 	binary.Write(&buffer, binary.BigEndian, p.Raw)
 
 	// While all bytes aren't convert into layers
-	for len(buffer.Bytes()) > 0 {
+	for {
 
-		// Return Raw Layer if the buffer isn't nil and the next layer is Raw
-		// Missing !!!
+		// If buffer is nil
+		if buffer.Len() == 0 {
+			break
+		}
 
 		// Start with the Ethernet layer
 		if len(p.Layers) == 0 {
+
 			// Add Ethernet layer into p.Layers
 			p.Layers = append(p.Layers, &layers.Ether{})
+
 			// Do the dissection
 			bytes_remaining := p.Layers[0].Dissect(&buffer)
 
 			// Call the BindLayer func to know the next layer
 			next_layer := p.Layers[0].BindLayer()
+
 			// Add the next Layer into p.Layers
-			if next_layer != nil && len(buffer.Bytes()) != 0 {
+			if next_layer != nil && buffer.Len() != 0 {
 				p.Layers = append(p.Layers, next_layer)
+
+				// Return Raw Layer if the buffer isn't nil and the next layer is nil
+			} else if next_layer == nil && buffer.Len() != 0 {
+				p.Layers = append(p.Layers, &layers.Raw{Load: bytes_remaining.Bytes()})
+				break
+
+				// There is no next_layer and all bytes are dissect
+			} else {
+				break
 			}
+
 			// Remove used bytes
 			buffer = *bytes_remaining
 
 		} else { // Other Layers
+
 			// Get the last layer of p.Layers
 			// Do the dissection
 			bytes_remaining := p.Layers[len(p.Layers)-1].Dissect(&buffer)
+
 			// Call the BindLayer func to know the next layer
 			next_layer := p.Layers[len(p.Layers)-1].BindLayer()
 
 			if next_layer != nil && len(buffer.Bytes()) != 0 {
 				p.Layers = append(p.Layers, next_layer)
-			} else { // If bytes are not dissected and there is no next layer
+
+				// Return Raw Layer if the buffer isn't nil and the next layer is nil
+			} else if next_layer == nil && buffer.Len() != 0 {
+				p.Layers = append(p.Layers, &layers.Raw{Load: bytes_remaining.Bytes()})
+				break
+
+				// There is no next_layer and all bytes are dissect
+			} else {
 				break
 			}
+
 			// Add the next Layer into p.Layers
 			p.Layers = append(p.Layers, next_layer)
 			// Remove used bytes
