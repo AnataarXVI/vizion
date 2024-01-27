@@ -3,6 +3,14 @@
 
 This tool is designed for offensive use. It enables packets to be forged and quickly dissected. In the future, it will incorporate attack functions such as mitm and others.
 
+## Installation 
+
+To download this library do :
+
+```
+$ go get github.com/AnataarXVI/vizion
+```
+
 ## Getting started
 
 Vizion can be imported as a library. This library lets you create fully customizable packets. 
