@@ -30,6 +30,7 @@ func (p *Packet) Show() {
 
 		}
 	}
+	fmt.Print("\n")
 }
 
 // ModifyField dynamically modifies a layer field.

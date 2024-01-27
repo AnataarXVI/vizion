@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
+	"os/signal"
 	"syscall"
 
 	"github.com/AnataarXVI/vizion/packet"
@@ -69,23 +71,51 @@ func Send(pkt packet.Packet, iface string) error {
 	return nil
 }
 
-func Sniff(iface string) {
+func Sniff(iface string) []*packet.Packet {
+
+	var pkt_list []*packet.Packet
 
 	s := NewSocket(iface)
 	defer syscall.Close(s.fd)
 
-	for {
-		buffer := make([]byte, 1460)
+	// Initiate sigs chan to handle Ctrl+C
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, os.Interrupt)
 
-		n, error := syscall.Read(s.fd, buffer)
+	// Initiate data chan to handle data stream
+	data := make(chan packet.Packet)
 
-		if error != nil {
-			log.Fatal(error)
+	// Convert data into Packet and send it in the data chan
+	go func() {
+
+		for {
+			buffer := make([]byte, 1460)
+			n, error := syscall.Read(s.fd, buffer)
+
+			if error != nil {
+				log.Fatal(error)
+			}
+
+			new_pkt := packet.Packet{Raw: buffer[:n]}
+
+			data <- new_pkt
+
 		}
-		_ = n
 
-		// TODO: Insert the captured bytes in the Raw field of a packet and call up the dissection function
-		// TODO: Ensure that when Ctrl+C is pressed, the packets received are saved in a revised list at the end.
+	}()
+
+	for {
+
+		select {
+		// If Interrupt
+		case <-sigs:
+			return pkt_list
+		// Dissect each packet and save it into a list
+		case pkt := <-data:
+			pkt.Dissect()
+			pkt_list = append(pkt_list, &pkt)
+		}
+
 	}
 
 }
