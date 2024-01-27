@@ -63,6 +63,17 @@ Send(pkt,"lo")
 Packet sent successfully.
 ```
 
+## Ressources
+
+In the [docs](./docs) folder, you'll find all the documentation you need to get started with the library.
+
+Some useful resources :
+
+- [Build a packet](./docs/Build_packet.md)
+- [Sniff packets](./docs/Sniff_packet.md)
+- [Create a dissector](./docs/Create_dissector.md)
+
+
 
 ## Contributing
 
