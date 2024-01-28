@@ -1,4 +1,4 @@
-# <img src="docs/vizion.png" width="150" valign="middle" alt="Vizion" /> &nbsp;&nbsp; Vizion
+# <img src="docs/vizion.png" width="100" valign="middle" alt="Vizion" /> &nbsp;&nbsp; Vizion
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
 
