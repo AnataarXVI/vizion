@@ -71,7 +71,14 @@ func Send(pkt packet.Packet, iface string) error {
 	return nil
 }
 
-func Sniff(iface string) []*packet.Packet {
+/*
+Sniff will capture traffic on an interface.
+
+The iface parameter corresponding to the interface name.
+
+The prn parameter handle a function called when a packet is received. The function need to handle a packet.Packet struct to get the packet.
+*/
+func Sniff(iface string, prn func(pkt packet.Packet)) []*packet.Packet {
 
 	var pkt_list []*packet.Packet
 
@@ -97,6 +104,12 @@ func Sniff(iface string) []*packet.Packet {
 			}
 
 			new_pkt := packet.Packet{Raw: buffer[:n]}
+			new_pkt.Dissect()
+
+			// If prn is not nil. It will call the func give in parameters
+			if prn != nil {
+				prn(new_pkt)
+			}
 
 			data <- new_pkt
 
@@ -112,7 +125,6 @@ func Sniff(iface string) []*packet.Packet {
 			return pkt_list
 		// Dissect each packet and save it into a list
 		case pkt := <-data:
-			pkt.Dissect()
 			pkt_list = append(pkt_list, &pkt)
 		}
 
