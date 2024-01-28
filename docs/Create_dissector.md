@@ -1,5 +1,7 @@
 # How to create a dissector ?
 
+This library uses dissectors. Each dissector corresponds to a protocol. They are used to build and dissect packages. They are located in the [layers](../layers/) folder.
+
 Each layer is represented by a structure with several fields corresponding to the protocol. For each field, you must indicate which type it is.  
 
 Let's take the ARP layer as an example:
