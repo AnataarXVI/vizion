@@ -105,7 +105,7 @@ pkt.Show()
 The `Send()` function is used to send a packet, indicating the interface.
 
 ```go
-Send(pkt, "lo")
+vizion.Send(pkt, "lo")
 ```
 
 ```
