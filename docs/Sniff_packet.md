@@ -22,7 +22,7 @@ func main() {
 }
 ```
 
-The function takes as argument the name of the interface and optionally a function that will be called each time a packet is received. The default value is nil.
+The function takes as argument the name of the interface and optionally a function that will be called each time a packet is received. The default value is `nil`.
 
 When the capture is interrupted, all packets are returned by the function and can be further manipulated.
 

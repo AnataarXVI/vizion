@@ -1,8 +1,9 @@
 # <img src="docs/vizion.png" width="100" valign="middle" alt="Vizion" /> &nbsp;&nbsp; Vizion
 
+[![GoDoc](https://godoc.org/github.com/google/gopacket?status.svg)](https://godoc.org/github.com/AnataarXVI/vizion)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
 
-This tool is designed for offensive use. It enables packets to be forged and quickly dissected. In the future, it will incorporate attack functions such as mitm and others.
+Vizion is a library designed for building and dissecting network packages with great speed and efficiency.
 
 ## Installation 
 
