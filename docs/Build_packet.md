@@ -36,11 +36,10 @@ dst, _ := net.ParseMAC("aa:bb:cc:dd:ee:ff")
 src, _ := net.ParseMAC("11:22:33:44:55:66")
 
 // Ethernet Layer
-ethernetLayer := layers.Ether{
-    Dst:  dst,
-    Src:  src,
-    Type: 0x0806,
-}
+ethernetLayer := layers.EtherLayer()
+ethernetLayer.Dst = dst
+ethernetLayer.Src = src
+ethernetLayer.Type = 0x0806
 ```
 
 _For the ARP Layer :_
@@ -53,18 +52,15 @@ psrc := net.ParseIP("10.10.10.10")
 pdst := net.ParseIP("10.10.10.20")
 
 // ARP Layer
-arpLayer := layers.ARP{
-	Hwtype: 0x0001,
-	Ptype:  0x0800,
-	Hwlen:  6,
-	Plen:   4,
-	Opcode: 0x0001,
-	Hwsrc:  hwsrc,
-	Hwdst:  hwdst,
-	Psrc:   psrc,
-	Pdst:   pdst,
-}
+arpLayer := layers.ARPLayer()
+arpLayer.Hwsrc = hwsrc
+arpLayer.Hwdst = hwdst
+arpLayer.Psrc = psrc
+arpLayer.Pdst = pdst
 ```
+
+You don't need to specify all fields, as the default values are set.
+
 
 ## Third step
 

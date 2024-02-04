@@ -27,7 +27,7 @@ For the structure to be displayed correctly when using the `Show()` function on 
 
 **This name must be the same as that used in the structure.**
 
-The following functions must be defined for each layer: `GetName()`, `Build()`, `Dissect()` and `BindLayer()`.
+The following functions must be defined for each layer: `GetName()`, `SetDefault()` , `Build()`, `Dissect()`, `BindLayer()` and `<LayerName>Layer()`.
 
 ## GetName
 
@@ -38,6 +38,29 @@ func (a *ARP) GetName() string {
 	return "ARP"
 }
 ```
+
+## SetDefault
+
+The purpose of this function is to define default values for each protocol field.
+
+```go
+func (a *ARP) SetDefault() {
+
+	ifaces, _ := net.Interfaces()
+	netAddr, _ := net.InterfaceAddrs()
+
+	a.Hwtype = 1
+	a.Ptype = 0x0800
+	a.Hwlen = 6
+	a.Plen = 4
+	a.Opcode = 1
+	a.Hwsrc = ifaces[1].HardwareAddr
+	a.Psrc = netAddr[1].(*net.IPNet).IP.To4()
+	a.Hwdst = net.HardwareAddr{0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+	a.Pdst = net.IPv4(0, 0, 0, 0)
+}
+```
+
 
 ## Build
 
@@ -142,3 +165,15 @@ if a.field == value {
 ```
 
 Once you've understood this, it's important to specify the condition for indicating the presence of our layer in the `BindLayer()` function of the previous layer !
+
+## <LayerName>Layer
+
+This is the function that will be called when the layer is created. It instantiates the layer and applies default values to the fields by calling the `SetDefault()` function. Finally, it returns the layer, which can then be manipulated by the user.
+
+```go
+func ARPLayer() ARP {
+	arp := ARP{}
+	arp.SetDefault()
+	return arp
+}
+```
