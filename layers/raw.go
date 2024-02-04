@@ -13,6 +13,14 @@ func (r *Raw) GetName() string {
 	return "Raw"
 }
 
+func RawLayer() Raw {
+	return Raw{}
+}
+
+func (r *Raw) SetDefault() {
+
+}
+
 func (r *Raw) Build() []byte {
 	// Initiate the buffer
 	var buffer bytes.Buffer

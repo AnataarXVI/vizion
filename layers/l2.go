@@ -12,9 +12,26 @@ type Ether struct {
 	Type uint16           `field:"Type"`
 }
 
+// Create and return an Ether layer with default value set
+func EtherLayer() Ether {
+	eth := Ether{}
+	eth.SetDefault()
+	return eth
+}
+
 // GetName returns the protocol name.
 func (e *Ether) GetName() string {
 	return "Ethernet"
+}
+
+// Set a default value for each layer field
+func (e *Ether) SetDefault() {
+
+	ifaces, _ := net.Interfaces()
+
+	e.Dst = net.HardwareAddr{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}
+	e.Src = ifaces[1].HardwareAddr
+	e.Type = 0x0900
 }
 
 // Serialize will convert a layer into bytes
@@ -22,11 +39,6 @@ func (e *Ether) Build() []byte {
 
 	// Initiate the buffer
 	var buffer bytes.Buffer
-
-	// Check for the default value
-	if e.Dst == nil {
-		e.Dst = net.HardwareAddr{0xff, 0xff, 0xff, 0xff, 0xff, 0xff}
-	}
 
 	// Write data field into the buffer
 	binary.Write(&buffer, binary.BigEndian, e.Dst)
@@ -83,6 +95,31 @@ type ARP struct {
 
 func (a *ARP) GetName() string {
 	return "ARP"
+}
+
+// Create and return an ARP layer with default value set
+func ARPLayer() ARP {
+	arp := ARP{}
+	arp.SetDefault()
+	return arp
+}
+
+// Set a default value for each layer field
+func (a *ARP) SetDefault() {
+
+	ifaces, _ := net.Interfaces()
+	netAddr, _ := net.InterfaceAddrs()
+
+	a.Hwtype = 1
+	a.Ptype = 0x0800
+	a.Hwlen = 6
+	a.Plen = 4
+	a.Opcode = 1
+	a.Hwsrc = ifaces[1].HardwareAddr
+	a.Psrc = netAddr[1].(*net.IPNet).IP.To4()
+	a.Hwdst = net.HardwareAddr{0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+	a.Pdst = net.IPv4(0, 0, 0, 0)
+
 }
 
 // TODO: Take into account the addition of paddind depending on frame size

@@ -40,6 +40,7 @@ func ModifyField(layer layers.Layer, fieldName string, value interface{}) error 
 
 	layerValue := reflect.ValueOf(layer).Elem()
 	field := layerValue.FieldByName(fieldName)
+
 	if !field.IsValid() {
 		return fmt.Errorf("unknown field: %s", fieldName)
 	}
@@ -146,7 +147,5 @@ func (p *Packet) Build() ([]byte, error) {
 }
 
 func (p *Packet) AddLayers(layers ...layers.Layer) {
-	for _, layer := range layers {
-		p.Layers = append(p.Layers, layer)
-	}
+	p.Layers = append(p.Layers, layers...)
 }
