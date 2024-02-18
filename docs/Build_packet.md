@@ -80,11 +80,11 @@ pkt.Show()
 ```
 
 ```
-###[ Ethernet ]###
+▼ [ Ethernet ]
 	Dst = aa:bb:cc:dd:ee:ff
 	Src = 11:22:33:44:55:66
 	Type = 2054
-###[ ARP ]###
+▼ [ ARP ]
 	Hwtype = 1
 	Ptype = 2048
 	Hwlen = 6

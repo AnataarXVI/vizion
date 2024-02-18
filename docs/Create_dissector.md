@@ -9,21 +9,19 @@ Let's take the ARP layer as an example:
 ```go
 // ARP Layer
 type ARP struct {
-	Hwtype uint16           `field:"Hwtype"`
-	Ptype  uint16           `field:"Ptype"`
-	Hwlen  uint8            `field:"Hwlen"`
-	Plen   uint8            `field:"Plen"`
-	Opcode uint16           `field:"Opcode"`
-	Hwsrc  net.HardwareAddr `field:"Hwsrc"`
-	Psrc   net.IP           `field:"Psrc"`
-	Hwdst  net.HardwareAddr `field:"Hwdst"`
-	Pdst   net.IP           `field:"Pdst"`
+	Hwtype uint16           
+	Ptype  uint16           
+	Hwlen  uint8            
+	Plen   uint8            
+	Opcode uint16           
+	Hwsrc  net.HardwareAddr 
+	Psrc   net.IP           
+	Hwdst  net.HardwareAddr 
+	Pdst   net.IP           
 }
 ```
 
 As you can see, the ARP layer is a structure with different fields. 
-
-For the structure to be displayed correctly when using the `Show()` function on the packet, it is necessary to assign a tag to the name of `field` with the field name as its value. 
 
 **This name must be the same as that used in the structure.**
 
@@ -67,7 +65,7 @@ func (a *ARP) SetDefault() {
 This function is used when creating a packet using the ARP layer. It returns a corresponding array of bytes containing the values of each field.
 
 ```go
-func (a *ARP) Build() []byte {
+func (a *ARP) Build() *buffer.ProtoBuff {
     // Process
 }
 ```
@@ -76,36 +74,36 @@ The first step is to initialize a buffer containing the bytes of our fields.
 
 ```go
 // Initiate the buffer
-var buffer bytes.Buffer
+var buffer buffer.ProtoBuff
 ```
 
-Next, we need to add the value of each of our fields inside the buffer. 
+Next, we need to add the value of each of our fields inside the buffer. The `Add()` function takes two positional arguments. The first is the field name and the second is its value.
 
 ```go
 // Add Hwtype field into the buffer
-binary.Write(&buffer, binary.BigEndian, a.Hwtype)
+buffer.Add("Hwtype", a.Hwtype)
 // Add Ptype field into the buffer
-binary.Write(&buffer, binary.BigEndian, a.Ptype)
+buffer.Add("Ptype", a.Ptype)
 // Add Hwlen field into the buffer
-binary.Write(&buffer, binary.BigEndian, a.Hwlen)
+buffer.Add("Hwlen", a.Hwlen)
 // Add Plen field into the buffer
-binary.Write(&buffer, binary.BigEndian, a.Plen)
+buffer.Add("Plen", a.Plen)
 // Add Opcode field into the buffer
-binary.Write(&buffer, binary.BigEndian, a.Opcode)
+buffer.Add("Opcode", a.Opcode)
 // Add Hwsrc field into the buffer
-binary.Write(&buffer, binary.BigEndian, a.Hwsrc)
+buffer.Add("Hwsrc", a.Hwsrc)
 // Add Psrc field into the buffer
-binary.Write(&buffer, binary.BigEndian, a.Psrc)
+buffer.Add("Psrc", a.Psrc)
 // Add Hwdst field into the buffer
-binary.Write(&buffer, binary.BigEndian, a.Hwdst)
+buffer.Add("Hwdst", a.Hwdst)
 // Add Pdst field into the buffer
-binary.Write(&buffer, binary.BigEndian, a.Pdst)
+buffer.Add("Pdst", a.Pdst)
 ```
 
-Finally, we return the contents of our buffer.
+Finally, we return the buffer.
 
 ```go
-return buffer.Bytes()
+return &buffer
 ```
 
 ## Dissect
@@ -113,7 +111,7 @@ return buffer.Bytes()
 This function converts an array of bytes into a layer. It takes as argument a buffer corresponding to the undissected bytes and returns the buffer.
 
 ```go
-func (a *ARP) Dissect(buf *bytes.Buffer) *bytes.Buffer {
+func (a *ARP) Dissect(buf *buffer.ProtoBuff) *buffer.ProtoBuff {
     // Process
     return buf
 }

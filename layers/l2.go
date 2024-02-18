@@ -1,15 +1,23 @@
 package layers
 
 import (
-	"bytes"
 	"encoding/binary"
 	"net"
+
+	"github.com/AnataarXVI/vizion/buffer"
+)
+
+type EtherType uint16
+
+const (
+	EtherTypeIPv4 EtherType = 0x0800
+	EtherTypeARP  EtherType = 0x0806
 )
 
 type Ether struct {
-	Dst  net.HardwareAddr `field:"Dst"`
-	Src  net.HardwareAddr `field:"Src"`
-	Type uint16           `field:"Type"`
+	Dst  net.HardwareAddr
+	Src  net.HardwareAddr
+	Type EtherType
 }
 
 // Create and return an Ether layer with default value set
@@ -35,27 +43,27 @@ func (e *Ether) SetDefault() {
 }
 
 // Serialize will convert a layer into bytes
-func (e *Ether) Build() []byte {
+func (e *Ether) Build() *buffer.ProtoBuff {
 
 	// Initiate the buffer
-	var buffer bytes.Buffer
+	var buffer buffer.ProtoBuff
 
 	// Write data field into the buffer
-	binary.Write(&buffer, binary.BigEndian, e.Dst)
+	buffer.Add("Dst", e.Dst)
 
-	binary.Write(&buffer, binary.BigEndian, e.Src)
+	buffer.Add("Src", e.Src)
 
-	binary.Write(&buffer, binary.BigEndian, e.Type)
+	buffer.Add("Type", e.Type)
 
-	return buffer.Bytes()
+	return &buffer
 }
 
 // Deserialize will convert bytes into a layer
-func (e *Ether) Dissect(buf *bytes.Buffer) *bytes.Buffer {
-	e.Dst = buf.Next(6)
-	e.Src = buf.Next(6)
-	e.Type = binary.BigEndian.Uint16(buf.Next(2))
-	return buf
+func (e *Ether) Dissect(buffer *buffer.ProtoBuff) *buffer.ProtoBuff {
+	e.Dst = buffer.Next(6)
+	e.Src = buffer.Next(6)
+	e.Type = EtherType(binary.BigEndian.Uint16(buffer.Next(2)))
+	return buffer
 }
 
 // BindLayer return the top
@@ -82,15 +90,15 @@ var Opcode = map[uint16]string{
 }
 
 type ARP struct {
-	Hwtype uint16           `field:"Hwtype"`
-	Ptype  uint16           `field:"Ptype"`
-	Hwlen  uint8            `field:"Hwlen"`
-	Plen   uint8            `field:"Plen"`
-	Opcode uint16           `field:"Opcode"`
-	Hwsrc  net.HardwareAddr `field:"Hwsrc"`
-	Psrc   net.IP           `field:"Psrc"`
-	Hwdst  net.HardwareAddr `field:"Hwdst"`
-	Pdst   net.IP           `field:"Pdst"`
+	Hwtype uint16
+	Ptype  uint16
+	Hwlen  uint8
+	Plen   uint8
+	Opcode uint16
+	Hwsrc  net.HardwareAddr
+	Psrc   net.IP
+	Hwdst  net.HardwareAddr
+	Pdst   net.IP
 }
 
 func (a *ARP) GetName() string {
@@ -123,42 +131,42 @@ func (a *ARP) SetDefault() {
 }
 
 // TODO: Take into account the addition of paddind depending on frame size
-func (a *ARP) Build() []byte {
+func (a *ARP) Build() *buffer.ProtoBuff {
 	// Initiate the buffer
-	var buffer bytes.Buffer
+	var buffer buffer.ProtoBuff
 
-	binary.Write(&buffer, binary.BigEndian, a.Hwtype)
+	buffer.Add("Hwtype", a.Hwtype)
 
-	binary.Write(&buffer, binary.BigEndian, a.Ptype)
+	buffer.Add("Ptype", a.Ptype)
 
-	binary.Write(&buffer, binary.BigEndian, a.Hwlen)
+	buffer.Add("Hwlen", a.Hwlen)
 
-	binary.Write(&buffer, binary.BigEndian, a.Plen)
+	buffer.Add("Plen", a.Plen)
 
-	binary.Write(&buffer, binary.BigEndian, a.Opcode)
+	buffer.Add("Opcode", a.Opcode)
 
-	binary.Write(&buffer, binary.BigEndian, a.Hwsrc)
+	buffer.Add("Hwsrc", a.Hwsrc)
 
-	binary.Write(&buffer, binary.BigEndian, a.Psrc)
+	buffer.Add("Psrc", a.Psrc)
 
-	binary.Write(&buffer, binary.BigEndian, a.Hwdst)
+	buffer.Add("Hwdst", a.Hwdst)
 
-	binary.Write(&buffer, binary.BigEndian, a.Pdst)
+	buffer.Add("Pdst", a.Pdst)
 
-	return buffer.Bytes()
+	return &buffer
 }
 
-func (a *ARP) Dissect(buf *bytes.Buffer) *bytes.Buffer {
-	a.Hwtype = binary.BigEndian.Uint16(buf.Next(2))
-	a.Ptype = binary.BigEndian.Uint16(buf.Next(2))
-	a.Hwlen = uint8(buf.Next(1)[0])
-	a.Plen = uint8(buf.Next(1)[0])
-	a.Opcode = binary.BigEndian.Uint16(buf.Next(2))
-	a.Hwsrc = buf.Next(int(a.Hwlen))
-	a.Psrc = buf.Next(int(a.Plen))
-	a.Hwdst = buf.Next(int(a.Hwlen))
-	a.Pdst = buf.Next(int(a.Plen))
-	return buf
+func (a *ARP) Dissect(buffer *buffer.ProtoBuff) *buffer.ProtoBuff {
+	a.Hwtype = binary.BigEndian.Uint16(buffer.Next(2))
+	a.Ptype = binary.BigEndian.Uint16(buffer.Next(2))
+	a.Hwlen = uint8(buffer.Next(1)[0])
+	a.Plen = uint8(buffer.Next(1)[0])
+	a.Opcode = binary.BigEndian.Uint16(buffer.Next(2))
+	a.Hwsrc = buffer.Next(int(a.Hwlen))
+	a.Psrc = buffer.Next(int(a.Plen))
+	a.Hwdst = buffer.Next(int(a.Hwlen))
+	a.Pdst = buffer.Next(int(a.Plen))
+	return buffer
 }
 
 func (a *ARP) BindLayer() Layer {

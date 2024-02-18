@@ -53,24 +53,7 @@ Send(pkt, "lo")
 
 _Result:_
 
-```
-###[ Ethernet ]###
-        Dst = ff:ff:ff:ff:ff:ff
-        Src = 00:45:3a:e3:b4:26
-        Type = 2054
-###[ ARP ]###
-        Hwtype = 1
-        Ptype = 2048
-        Hwlen = 6
-        Plen = 4
-        Opcode = 1
-        Hwsrc = 00:45:3a:e3:b4:26
-        Psrc = 172.16.1.15
-        Hwdst = 00:00:00:00:00:00
-        Pdst = 0.0.0.0
-
-Packet sent successfully.
-```
+![](./docs/get_started.png)
 
 ## Ressources
 

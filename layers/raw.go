@@ -1,12 +1,11 @@
 package layers
 
 import (
-	"bytes"
-	"encoding/binary"
+	"github.com/AnataarXVI/vizion/buffer"
 )
 
 type Raw struct {
-	Load []byte `field:"Load"`
+	Load []byte
 }
 
 func (r *Raw) GetName() string {
@@ -21,16 +20,16 @@ func (r *Raw) SetDefault() {
 
 }
 
-func (r *Raw) Build() []byte {
+func (r *Raw) Build() *buffer.ProtoBuff {
 	// Initiate the buffer
-	var buffer bytes.Buffer
+	var buffer buffer.ProtoBuff
 
-	binary.Write(&buffer, binary.BigEndian, r.Load)
+	buffer.Add("Raw", &r.Load)
 
-	return buffer.Bytes()
+	return &buffer
 }
 
-func (r *Raw) Dissect(buf *bytes.Buffer) *bytes.Buffer {
+func (r *Raw) Dissect(buf *buffer.ProtoBuff) *buffer.ProtoBuff {
 
 	r.Load = buf.Bytes()
 

@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/AnataarXVI/vizion/buffer"
 	"github.com/AnataarXVI/vizion/layers"
+	"github.com/AnataarXVI/vizion/utils"
 )
 
 // Packet is a structure representing a network packet.
@@ -15,21 +17,40 @@ type Packet struct {
 	Raw    []byte
 }
 
-// DisplayLayers displays the types of all layers in the package and accesses specific fields via the reflect lib.
+// Show displays the types of all layers in the package and accesses specific fields via the reflect lib.
 func (p *Packet) Show() {
+
 	for _, layer := range p.Layers {
 		// Display the actual layer
-		fmt.Printf("###[ %s ]###\n", layer.GetName())
-		layerType := reflect.TypeOf(layer).Elem()
-		layerValue := reflect.ValueOf(layer).Elem()
+		utils.Display_Layer(layer.GetName())
+		ProtoBuff := layer.Build()
+		loaded_fields := ProtoBuff.GetLoadedFields()
 
-		for i := 0; i < layerType.NumField(); i++ {
-			fieldName := layerType.Field(i).Tag.Get("field")
-			fieldValue := layerValue.Field(i).Interface()
-			fmt.Printf("\t%s = %v\n", fieldName, fieldValue)
-
+		for _, field := range loaded_fields {
+			utils.Display_Fields(field.Name, field.Value)
 		}
 	}
+	fmt.Print("\n")
+}
+
+// ShowF displays only layers passed as arguments. Other layers are not detailed.
+func (p *Packet) ShowF(filter ...string) {
+
+	for _, layer := range p.Layers {
+		utils.Display_Layer(layer.GetName())
+		for _, fl := range filter {
+			if fl == layer.GetName() {
+
+				ProtoBuff := layer.Build()
+				loaded_fields := ProtoBuff.GetLoadedFields()
+
+				for _, field := range loaded_fields {
+					utils.Display_Fields(field.Name, field.Value)
+				}
+			}
+		}
+	}
+
 	fmt.Print("\n")
 }
 
@@ -58,7 +79,7 @@ func ModifyField(layer layers.Layer, fieldName string, value interface{}) error 
 
 // Dissect converts received bytes into Layer
 func (p *Packet) Dissect() {
-	var buffer bytes.Buffer
+	var buffer buffer.ProtoBuff
 
 	// Insert Raw data into the buffer
 	binary.Write(&buffer, binary.BigEndian, p.Raw)
@@ -137,7 +158,7 @@ func (p *Packet) Build() ([]byte, error) {
 	for _, layer := range p.Layers {
 		serialized_data := layer.Build()
 
-		err := binary.Write(&buffer, binary.BigEndian, serialized_data)
+		err := binary.Write(&buffer, binary.BigEndian, serialized_data.Bytes())
 		if err != nil {
 			return nil, fmt.Errorf("error writing layer field: %s", err)
 		}
