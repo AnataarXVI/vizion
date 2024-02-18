@@ -111,9 +111,9 @@ return &buffer
 This function converts an array of bytes into a layer. It takes as argument a buffer corresponding to the undissected bytes and returns the buffer.
 
 ```go
-func (a *ARP) Dissect(buf *buffer.ProtoBuff) *buffer.ProtoBuff {
+func (a *ARP) Dissect(buffer *buffer.ProtoBuff) *buffer.ProtoBuff {
     // Process
-    return buf
+    return buffer
 }
 ```
 
@@ -122,23 +122,23 @@ Bytes are inserted for each field in the layer.
 
 ```go
 // Inserts bytes in Hwtype
-a.Hwtype = binary.BigEndian.Uint16(buf.Next(2))
+a.Hwtype = binary.BigEndian.Uint16(buffer.Next(2))
 // Inserts bytes in Ptype
-a.Ptype = binary.BigEndian.Uint16(buf.Next(2))
+a.Ptype = binary.BigEndian.Uint16(buffer.Next(2))
 // Inserts byte in Hwlen
-a.Hwlen = uint8(buf.Next(1)[0])
+a.Hwlen = uint8(buffer.Next(1)[0])
 // Inserts byte in Plen
-a.Plen = uint8(buf.Next(1)[0])
+a.Plen = uint8(buffer.Next(1)[0])
 // Inserts bytes in Opcode
-a.Opcode = binary.BigEndian.Uint16(buf.Next(2))
+a.Opcode = binary.BigEndian.Uint16(buffer.Next(2))
 // Inserts bytes in Hwsrc
-a.Hwsrc = buf.Next(int(a.Hwlen))
+a.Hwsrc = buffer.Next(int(a.Hwlen))
 // Inserts bytes in Psrc
-a.Psrc = buf.Next(int(a.Plen))
+a.Psrc = buffer.Next(int(a.Plen))
 // Inserts bytes in Hwdst
-a.Hwdst = buf.Next(int(a.Hwlen))
+a.Hwdst = buffer.Next(int(a.Hwlen))
 // Inserts bytes in Pdst
-a.Pdst = buf.Next(int(a.Plen))
+a.Pdst = buffer.Next(int(a.Plen))
 ```
 
 ## BindLayer
