@@ -25,7 +25,7 @@ func htons(i uint16) uint16 {
 // Create and return a Raw socket
 func NewSocket(iface string) *RawSocket {
 
-	protocol := htons(syscall.ETH_P_IP)
+	protocol := htons(syscall.ETH_P_ALL)
 
 	// Open raw socket
 	fd, err := syscall.Socket(syscall.AF_PACKET, syscall.SOCK_RAW, int(protocol))
