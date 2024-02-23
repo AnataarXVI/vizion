@@ -164,7 +164,6 @@ func (p *Packet) Build() ([]byte, error) {
 		}
 
 	}
-	fmt.Println(buffer.Bytes())
 	return buffer.Bytes(), nil
 }
 
