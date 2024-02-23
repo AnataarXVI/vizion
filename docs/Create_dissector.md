@@ -55,7 +55,7 @@ func (a *ARP) SetDefault() {
 	a.Hwsrc = ifaces[1].HardwareAddr
 	a.Psrc = netAddr[1].(*net.IPNet).IP.To4()
 	a.Hwdst = net.HardwareAddr{0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
-	a.Pdst = net.IPv4(0, 0, 0, 0)
+	a.Pdst = net.IP{0, 0, 0, 0}
 }
 ```
 
@@ -77,27 +77,27 @@ The first step is to initialize a buffer containing the bytes of our fields.
 var buffer buffer.ProtoBuff
 ```
 
-Next, we need to add the value of each of our fields inside the buffer. The `Add()` function takes two positional arguments. The first is the field name and the second is its value.
+Next, we need to add the value of each of our fields inside the buffer. The `Add()` function takes three positional arguments. The first is the field name, the second is its value and the third is for enumeration.
 
 ```go
 // Add Hwtype field into the buffer
-buffer.Add("Hwtype", a.Hwtype)
+buffer.Add("Hwtype", a.Hwtype, HARDWARE_TYPES[a.Hwtype])
 // Add Ptype field into the buffer
-buffer.Add("Ptype", a.Ptype)
+buffer.Add("Ptype", a.Ptype, ETHERTYPE[a.Ptype])
 // Add Hwlen field into the buffer
-buffer.Add("Hwlen", a.Hwlen)
+buffer.Add("Hwlen", a.Hwlen, nil)
 // Add Plen field into the buffer
-buffer.Add("Plen", a.Plen)
+buffer.Add("Plen", a.Plen, nil)
 // Add Opcode field into the buffer
-buffer.Add("Opcode", a.Opcode)
+buffer.Add("Opcode", a.Opcode, OPCODE[a.Opcode])
 // Add Hwsrc field into the buffer
-buffer.Add("Hwsrc", a.Hwsrc)
+buffer.Add("Hwsrc", a.Hwsrc, nil)
 // Add Psrc field into the buffer
-buffer.Add("Psrc", a.Psrc)
+buffer.Add("Psrc", a.Psrc, nil)
 // Add Hwdst field into the buffer
-buffer.Add("Hwdst", a.Hwdst)
+buffer.Add("Hwdst", a.Hwdst, nil)
 // Add Pdst field into the buffer
-buffer.Add("Pdst", a.Pdst)
+buffer.Add("Pdst", a.Pds, nil)
 ```
 
 Finally, we return the buffer.

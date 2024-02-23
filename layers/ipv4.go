@@ -4,6 +4,8 @@ import (
 	"net"
 )
 
+// Not yet implemented !!
+
 type IP struct {
 	Version    uint8  `field:"Version"`
 	IHL        uint8  `field:"IHL"`

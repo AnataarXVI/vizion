@@ -7,17 +7,17 @@ import (
 	"github.com/AnataarXVI/vizion/buffer"
 )
 
-type EtherType uint16
-
-const (
-	EtherTypeIPv4 EtherType = 0x0800
-	EtherTypeARP  EtherType = 0x0806
-)
+// Ethernet Types
+var ETHERTYPE = map[uint16]string{
+	0x0800: "IPv4",
+	0x0806: "ARP",
+	0x86dd: "IPv6",
+}
 
 type Ether struct {
 	Dst  net.HardwareAddr
 	Src  net.HardwareAddr
-	Type EtherType
+	Type uint16
 }
 
 // Create and return an Ether layer with default value set
@@ -49,11 +49,11 @@ func (e *Ether) Build() *buffer.ProtoBuff {
 	var buffer buffer.ProtoBuff
 
 	// Write data field into the buffer
-	buffer.Add("Dst", e.Dst)
+	buffer.Add("Dst", e.Dst, nil)
 
-	buffer.Add("Src", e.Src)
+	buffer.Add("Src", e.Src, nil)
 
-	buffer.Add("Type", e.Type)
+	buffer.Add("Type", e.Type, ETHERTYPE[e.Type])
 
 	return &buffer
 }
@@ -62,7 +62,7 @@ func (e *Ether) Build() *buffer.ProtoBuff {
 func (e *Ether) Dissect(buffer *buffer.ProtoBuff) *buffer.ProtoBuff {
 	e.Dst = buffer.Next(6)
 	e.Src = buffer.Next(6)
-	e.Type = EtherType(binary.BigEndian.Uint16(buffer.Next(2)))
+	e.Type = binary.BigEndian.Uint16(buffer.Next(2))
 	return buffer
 }
 
@@ -77,7 +77,31 @@ func (e *Ether) BindLayer() Layer {
 	return nil
 }
 
-var Opcode = map[uint16]string{
+var HARDWARE_TYPES = map[uint16]string{
+	1:  "Ethernet (10Mb)",
+	2:  "Ethernet (3Mb)",
+	3:  "AX.25",
+	4:  "Proteon ProNET Token Ring",
+	5:  "Chaos",
+	6:  "IEEE 802 Networks",
+	7:  "ARCNET",
+	8:  "Hyperchannel",
+	9:  "Lanstar",
+	10: "Autonet Short Address",
+	11: "LocalTalk",
+	12: "LocalNet",
+	13: "Ultra link",
+	14: "SMDS",
+	15: "Frame relay",
+	16: "ATM",
+	17: "HDLC",
+	18: "Fibre Channel",
+	19: "ATM",
+	20: "Serial Line",
+	21: "ATM",
+}
+
+var OPCODE = map[uint16]string{
 	1: "who-has",
 	2: "is-at",
 	3: "RARP-req",
@@ -126,7 +150,7 @@ func (a *ARP) SetDefault() {
 	a.Hwsrc = ifaces[1].HardwareAddr
 	a.Psrc = netAddr[1].(*net.IPNet).IP.To4()
 	a.Hwdst = net.HardwareAddr{0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
-	a.Pdst = net.IPv4(0, 0, 0, 0)
+	a.Pdst = net.IP{0, 0, 0, 0}
 
 }
 
@@ -135,23 +159,23 @@ func (a *ARP) Build() *buffer.ProtoBuff {
 	// Initiate the buffer
 	var buffer buffer.ProtoBuff
 
-	buffer.Add("Hwtype", a.Hwtype)
+	buffer.Add("Hwtype", a.Hwtype, HARDWARE_TYPES[a.Hwtype])
 
-	buffer.Add("Ptype", a.Ptype)
+	buffer.Add("Ptype", a.Ptype, ETHERTYPE[a.Ptype])
 
-	buffer.Add("Hwlen", a.Hwlen)
+	buffer.Add("Hwlen", a.Hwlen, nil)
 
-	buffer.Add("Plen", a.Plen)
+	buffer.Add("Plen", a.Plen, nil)
 
-	buffer.Add("Opcode", a.Opcode)
+	buffer.Add("Opcode", a.Opcode, OPCODE[a.Opcode])
 
-	buffer.Add("Hwsrc", a.Hwsrc)
+	buffer.Add("Hwsrc", a.Hwsrc, nil)
 
-	buffer.Add("Psrc", a.Psrc)
+	buffer.Add("Psrc", a.Psrc, nil)
 
-	buffer.Add("Hwdst", a.Hwdst)
+	buffer.Add("Hwdst", a.Hwdst, nil)
 
-	buffer.Add("Pdst", a.Pdst)
+	buffer.Add("Pdst", a.Pdst, nil)
 
 	return &buffer
 }

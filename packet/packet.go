@@ -27,7 +27,7 @@ func (p *Packet) Show() {
 		loaded_fields := ProtoBuff.GetLoadedFields()
 
 		for _, field := range loaded_fields {
-			utils.Display_Fields(field.Name, field.Value)
+			utils.Display_Fields(field.Name, field.Value, field.Enum)
 		}
 	}
 	fmt.Print("\n")
@@ -45,7 +45,7 @@ func (p *Packet) ShowF(filter ...string) {
 				loaded_fields := ProtoBuff.GetLoadedFields()
 
 				for _, field := range loaded_fields {
-					utils.Display_Fields(field.Name, field.Value)
+					utils.Display_Fields(field.Name, field.Value, field.Enum)
 				}
 			}
 		}
@@ -164,6 +164,7 @@ func (p *Packet) Build() ([]byte, error) {
 		}
 
 	}
+	fmt.Println(buffer.Bytes())
 	return buffer.Bytes(), nil
 }
 

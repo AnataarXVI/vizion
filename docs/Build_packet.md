@@ -32,8 +32,8 @@ Now you need to create the layers you want to add to your packet. For this examp
 _For the Ethernet Layer :_
 
 ```go
-dst, _ := net.ParseMAC("aa:bb:cc:dd:ee:ff")
-src, _ := net.ParseMAC("11:22:33:44:55:66")
+dst, _ := net.HardwareAddr{0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff}
+src, _ := net.HardwareAddr{0x11, 0x22, 0x33, 0x44, 0x55, 0x66}
 
 // Ethernet Layer
 ethernetLayer := layers.EtherLayer()
@@ -46,10 +46,10 @@ _For the ARP Layer :_
 
 ```go
 
-hwsrc, _ := net.ParseMAC("aa:bb:cc:dd:ee:ff")
-hwdst, _ := net.ParseMAC("11:22:33:44:55:66")
-psrc := net.ParseIP("10.10.10.10")
-pdst := net.ParseIP("10.10.10.20")
+hwsrc, _ := net.HardwareAddr{0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff}
+hwdst, _ := net.HardwareAddr{0x11, 0x22, 0x33, 0x44, 0x55, 0x66}
+psrc := net.IP{10,10,10,10}
+pdst := net.IP{10,10,10,20}
 
 // ARP Layer
 arpLayer := layers.ARPLayer()
@@ -79,22 +79,7 @@ You can display your packet to view its composition.
 pkt.Show()
 ```
 
-```
-▼ [ Ethernet ]
-	Dst = aa:bb:cc:dd:ee:ff
-	Src = 11:22:33:44:55:66
-	Type = 2054
-▼ [ ARP ]
-	Hwtype = 1
-	Ptype = 2048
-	Hwlen = 6
-	Plen = 4
-	Opcode = 1
-	Hwsrc = aa:bb:cc:dd:ee:ff
-	Psrc = 10.10.10.10
-	Hwdst = 11:22:33:44:55:66
-	Pdst = 10.10.10.20
-```
+![](./images/build_packet_example.png)
 
 ## Sending packet
 

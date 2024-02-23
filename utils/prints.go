@@ -26,6 +26,10 @@ func Display_Layer(layerName string) {
 	fmt.Printf("▼ [%s %s %s]\n", RED, layerName, RESET)
 }
 
-func Display_Fields(fieldName string, fieldValue any) {
-	fmt.Printf("\t%s%-6s%s   = %s %v %s\n", PURPLE, fieldName, RESET, YELLOW, fieldValue, RESET)
+func Display_Fields(fieldName string, fieldValue any, fieldEnum any) {
+	if fieldEnum != nil {
+		fmt.Printf("\t%s%-6s%s  = %s %v %s %s( 0x%x )%s \n", PURPLE, fieldName, RESET, YELLOW, fieldEnum, RESET, GREEN, fieldValue, RESET)
+	} else {
+		fmt.Printf("\t%s%-6s%s  = %s %v %s\n", PURPLE, fieldName, RESET, YELLOW, fieldValue, RESET)
+	}
 }

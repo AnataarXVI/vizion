@@ -53,7 +53,7 @@ Send(pkt, "lo")
 
 _Result:_
 
-![](./docs/get_started.png)
+![](./docs/images/get_started.png)
 
 ## Ressources
 

@@ -24,7 +24,7 @@ func (r *Raw) Build() *buffer.ProtoBuff {
 	// Initiate the buffer
 	var buffer buffer.ProtoBuff
 
-	buffer.Add("Raw", &r.Load)
+	buffer.Add("Raw", r.Load, nil)
 
 	return &buffer
 }

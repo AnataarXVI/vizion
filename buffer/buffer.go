@@ -14,18 +14,34 @@ func (buffer *ProtoBuff) GetLoadedFields() []LoadedField {
 	return buffer.loaded_fields
 }
 
-func (buffer *ProtoBuff) Add(fieldname string, value any) {
+// Add will write into the buffer the value passed in args.
+// It will also save the field for the Show function.
+func (buffer *ProtoBuff) Add(fieldname string, value any, enum any) {
 	binary.Write(buffer, binary.BigEndian, value)
-	buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname, Value: value})
+	// If enum and key exist
+	if enum != nil && enum != "" {
+		buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname, Value: value, Enum: enum})
+	} else {
+		buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname, Value: value})
+	}
+
 }
 
-// func (b *ProtoBuff) Add_Le(field any) {
-// 	binary.Write(b, binary.LittleEndian, field)
-// }
+func (buffer *ProtoBuff) Add_Le(fieldname string, value any, enum any) {
+	binary.Write(buffer, binary.LittleEndian, value)
+	// If enum and key exist
+	if enum != nil && enum != "" {
+		buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname, Value: value, Enum: enum})
+	} else {
+		buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname, Value: value})
+	}
+
+}
 
 type LoadedField struct {
 	Name  string
 	Value any
+	Enum  any
 }
 
 func (f *LoadedField) GetName() string {
