@@ -1,4 +1,4 @@
-# <img src="docs/vizion.png" width="100" valign="middle" alt="Vizion" /> &nbsp;&nbsp; Vizion
+# <img src="docs/vizion.png" width="110" valign="middle" alt="Vizion" /> &nbsp;&nbsp; Vizion
 
 [![GoDoc](https://godoc.org/github.com/google/gopacket?status.svg)](https://godoc.org/github.com/AnataarXVI/vizion)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
