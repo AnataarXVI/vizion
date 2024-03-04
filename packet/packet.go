@@ -23,12 +23,37 @@ func (p *Packet) Show() {
 	for _, layer := range p.Layers {
 		// Display the actual layer
 		utils.Display_Layer(layer.GetName())
+
 		ProtoBuff := layer.Build()
+
 		loaded_fields := ProtoBuff.GetLoadedFields()
 
+		var actual_sublayer string
+		var cache string
+
 		for _, field := range loaded_fields {
-			utils.Display_Fields(field.Name, field.Value, field.Enum)
+			// Check if the field belongs to a Sublayer
+			if !reflect.DeepEqual(field.ParentLayer, buffer.LoadedSubLayer{}) {
+				// Store the Sublayer
+				actual_sublayer = field.ParentLayer.LayerName
+
+				// Check if the previous field haven't the same Sublayer
+				if actual_sublayer != cache {
+					utils.Display_SubLayer(field.ParentLayer.Name)
+					utils.Display_SubFields(field.Name, field.Value, field.Enum)
+				} else { // Previous field are in the same Sublayer
+					utils.Display_SubFields(field.Name, field.Value, field.Enum)
+				}
+
+				// store the actual Sublayer into a cache
+				cache = actual_sublayer
+
+			} else { // Simple field
+				utils.Display_Fields(field.Name, field.Value, field.Enum)
+			}
+
 		}
+
 	}
 	fmt.Print("\n")
 }
@@ -40,12 +65,15 @@ func (p *Packet) ShowF(filter ...string) {
 		utils.Display_Layer(layer.GetName())
 		for _, fl := range filter {
 			if fl == layer.GetName() {
-
 				ProtoBuff := layer.Build()
 				loaded_fields := ProtoBuff.GetLoadedFields()
 
 				for _, field := range loaded_fields {
-					utils.Display_Fields(field.Name, field.Value, field.Enum)
+					if !reflect.DeepEqual(field.ParentLayer, buffer.LoadedSubLayer{}) {
+						utils.Display_SubFields(field.Name, field.Value, field.Enum)
+					} else {
+						utils.Display_Fields(field.Name, field.Value, field.Enum)
+					}
 				}
 			}
 		}
@@ -164,6 +192,7 @@ func (p *Packet) Build() ([]byte, error) {
 		}
 
 	}
+
 	return buffer.Bytes(), nil
 }
 

@@ -28,8 +28,20 @@ func Display_Layer(layerName string) {
 
 func Display_Fields(fieldName string, fieldValue any, fieldEnum any) {
 	if fieldEnum != nil {
-		fmt.Printf("\t%s%-6s%s  = %s %v %s %s( 0x%x )%s \n", PURPLE, fieldName, RESET, YELLOW, fieldEnum, RESET, GREEN, fieldValue, RESET)
+		fmt.Printf("\t%s%-6s%s  = %s %v %s %s(0x%x)%s \n", PURPLE, fieldName, RESET, YELLOW, fieldEnum, RESET, GREEN, fieldValue, RESET)
 	} else {
 		fmt.Printf("\t%s%-6s%s  = %s %v %s\n", PURPLE, fieldName, RESET, YELLOW, fieldValue, RESET)
+	}
+}
+
+func Display_SubLayer(subLayerName string) {
+	fmt.Printf("\t-- %s %s %s \n", RED, subLayerName, RESET)
+}
+
+func Display_SubFields(fieldName string, fieldValue any, fieldEnum any) {
+	if fieldEnum != nil {
+		fmt.Printf("\t\t%s%-6s%s  = %s %v %s %s(0x%x)%s \n", PURPLE, fieldName, RESET, YELLOW, fieldEnum, RESET, GREEN, fieldValue, RESET)
+	} else {
+		fmt.Printf("\t\t%s%-6s%s  = %s %v %s\n", PURPLE, fieldName, RESET, YELLOW, fieldValue, RESET)
 	}
 }

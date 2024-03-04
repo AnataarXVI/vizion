@@ -28,7 +28,7 @@ func EtherLayer() Ether {
 }
 
 // GetName returns the protocol name.
-func (e *Ether) GetName() string {
+func (e Ether) GetName() string {
 	return "Ethernet"
 }
 
@@ -67,7 +67,7 @@ func (e *Ether) Dissect(buffer *buffer.ProtoBuff) *buffer.ProtoBuff {
 }
 
 // BindLayer return the top
-func (e *Ether) BindLayer() Layer {
+func (e Ether) BindLayer() Layer {
 
 	// If ARP
 	if e.Type == 0x0806 {
