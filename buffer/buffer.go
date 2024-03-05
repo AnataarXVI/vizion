@@ -19,26 +19,7 @@ func (buffer *ProtoBuff) GetLoadedFields() []LoadedField {
 // It will also save the field for the Show function.
 func (buffer *ProtoBuff) Add(fieldname string, value any, enum any) {
 
-	// For SubLayer
-	if reflect.TypeOf(value).Kind() == reflect.Struct {
-
-		// Retrieve SubLayer name via GetName
-		StructName := reflect.ValueOf(value).MethodByName("GetName").Call(nil)[0].Interface().(string)
-
-		// Init a LoadedSubLayer struct
-		SubLayer := &LoadedSubLayer{LayerName: fieldname, Name: StructName}
-
-		// Build the SubLayer
-		StructBuffer := reflect.ValueOf(value).MethodByName("Build").Call(nil)[0].Interface().(*ProtoBuff)
-
-		// Add SubLayer buffer to main Layer buffer
-		binary.Write(buffer, binary.BigEndian, StructBuffer.Bytes())
-
-		for _, field := range StructBuffer.loaded_fields {
-			buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: field.Name, Value: field.Value, Enum: field.Enum, ParentLayer: *SubLayer})
-		}
-
-	} else if reflect.TypeOf(value).Kind() == reflect.String { // If value is string
+	if reflect.TypeOf(value).Kind() == reflect.String { // If value is string
 		// Add field value to buffer
 		buffer.WriteString(value.(string))
 
@@ -50,6 +31,7 @@ func (buffer *ProtoBuff) Add(fieldname string, value any, enum any) {
 		}
 
 	} else { // For other data types
+
 		// Add field value to buffer
 		binary.Write(buffer, binary.BigEndian, value)
 
@@ -67,27 +49,33 @@ func (buffer *ProtoBuff) Add(fieldname string, value any, enum any) {
 
 func (buffer *ProtoBuff) Add_Le(fieldname string, value any, enum any) {
 	binary.Write(buffer, binary.LittleEndian, value)
+
+	// If enum and key exist
+	if enum != nil && enum != "" {
+		buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname, Value: value, Enum: enum})
+	} else {
+		buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname, Value: value})
+	}
+
+}
+
+func (buffer *ProtoBuff) AddLayer(fieldname string, layer any) {
 	// For SubLayer
-	if reflect.TypeOf(value).Kind() == reflect.Struct {
+	if reflect.TypeOf(layer).Kind() == reflect.Struct {
 		// Retrieve SubLayer name via GetName
-		StructName := reflect.ValueOf(value).MethodByName("GetName").Call(nil)[0].Interface().(string)
+		StructName := reflect.ValueOf(layer).MethodByName("GetName").Call(nil)[0].Interface().(string)
 
 		// Init a LoadedSubLayer struct
 		SubLayer := &LoadedSubLayer{LayerName: fieldname, Name: StructName}
 
 		// Build the SubLayer
-		StructBuffer := reflect.ValueOf(value).MethodByName("Build").Call(nil)[0].Interface().(*ProtoBuff)
+		StructBuffer := reflect.ValueOf(layer).MethodByName("Build").Call(nil)[0].Interface().(*ProtoBuff)
+
+		// Add SubLayer buffer to main Layer buffer
+		binary.Write(buffer, binary.BigEndian, StructBuffer.Bytes())
 
 		for _, field := range StructBuffer.loaded_fields {
 			buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: field.Name, Value: field.Value, Enum: field.Enum, ParentLayer: *SubLayer})
-		}
-	} else {
-
-		// If enum and key exist
-		if enum != nil && enum != "" {
-			buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname, Value: value, Enum: enum})
-		} else {
-			buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname, Value: value})
 		}
 	}
 }

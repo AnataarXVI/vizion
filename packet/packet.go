@@ -192,7 +192,6 @@ func (p *Packet) Build() ([]byte, error) {
 		}
 
 	}
-
 	return buffer.Bytes(), nil
 }
 
