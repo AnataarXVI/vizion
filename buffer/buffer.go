@@ -3,6 +3,8 @@ package buffer
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
+	"math/bits"
 	"reflect"
 )
 
@@ -59,6 +61,118 @@ func (buffer *ProtoBuff) Add_Le(fieldname string, value any, enum any) {
 
 }
 
+func (buffer *ProtoBuff) AddBitsUint8(fieldname []string, values []uint8, sizes []int, enum []any) {
+
+	if len(values) != len(sizes) {
+		fmt.Errorf("Error: values and sizes must be same size")
+	}
+
+	var result uint8
+	var offset int
+	for i := 0; i < len(values); i++ {
+		if i == 0 {
+			result = (bits.RotateLeft8(values[i], -sizes[i]))
+			offset += sizes[i]
+		} else {
+			result |= bits.RotateLeft8(values[i], -(offset + sizes[i]))
+			offset += sizes[i]
+		}
+
+		if enum != nil && enum[i] != nil && enum[i] != "" {
+			buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname[i], Value: values[i], Enum: enum[i]})
+		} else {
+			buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname[i], Value: values[i]})
+		}
+
+	}
+
+	binary.Write(buffer, binary.BigEndian, result)
+}
+
+func (buffer *ProtoBuff) AddBitsUint16(fieldname []string, values []uint16, sizes []int, enum []any) {
+
+	if len(values) != len(sizes) {
+		fmt.Errorf("Error: values and sizes must be same size")
+	}
+
+	var result uint16
+	var offset int
+	for i := 0; i < len(values); i++ {
+
+		if i == 0 {
+			result = (bits.RotateLeft16(values[i], -sizes[i]))
+			offset += sizes[i]
+		} else {
+			result |= bits.RotateLeft16(values[i], -(offset + sizes[i]))
+			offset += sizes[i]
+		}
+
+		if enum != nil && enum[i] != nil && enum[i] != "" {
+			buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname[i], Value: values[i], Enum: enum[i]})
+		} else {
+			buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname[i], Value: values[i]})
+		}
+
+	}
+	binary.Write(buffer, binary.BigEndian, result)
+}
+
+func (buffer *ProtoBuff) AddBitsUint32(fieldname []string, values []uint32, sizes []int, enum []any) {
+
+	if len(values) != len(sizes) {
+		fmt.Errorf("Error: values and sizes must be same size")
+	}
+
+	var result uint32
+	var offset int
+	for i := 0; i < len(values); i++ {
+
+		if i == 0 {
+			result = (bits.RotateLeft32(values[i], -sizes[i]))
+			offset += sizes[i]
+		} else {
+			result |= bits.RotateLeft32(values[i], -(offset + sizes[i]))
+			offset += sizes[i]
+		}
+
+		if enum != nil && enum[i] != nil && enum[i] != "" {
+			buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname[i], Value: values[i], Enum: enum[i]})
+		} else {
+			buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname[i], Value: values[i]})
+		}
+
+	}
+	binary.Write(buffer, binary.BigEndian, result)
+}
+
+func (buffer *ProtoBuff) AddBitsUint64(fieldname []string, values []uint64, sizes []int, enum []any) {
+
+	if len(values) != len(sizes) {
+		fmt.Errorf("Error: values and sizes must be same size")
+	}
+
+	var result uint64
+	var offset int
+	for i := 0; i < len(values); i++ {
+
+		if i == 0 {
+			result = (bits.RotateLeft64(values[i], -sizes[i]))
+			offset += sizes[i]
+		} else {
+			result |= bits.RotateLeft64(values[i], -(offset + sizes[i]))
+			offset += sizes[i]
+		}
+
+		if enum != nil && enum[i] != nil && enum[i] != "" {
+			buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname[i], Value: values[i], Enum: enum[i]})
+		} else {
+			buffer.loaded_fields = append(buffer.loaded_fields, LoadedField{Name: fieldname[i], Value: values[i]})
+		}
+
+	}
+	binary.Write(buffer, binary.BigEndian, result)
+}
+
 func (buffer *ProtoBuff) AddLayer(fieldname string, layer any) {
 	// For SubLayer
 	if reflect.TypeOf(layer).Kind() == reflect.Struct {
@@ -98,4 +212,32 @@ func (f *LoadedField) GetName() string {
 
 func (f *LoadedField) GetValue() any {
 	return f.Value
+}
+
+func (buffer *ProtoBuff) NextUint8() uint8 {
+	return uint8(buffer.Next(1)[0])
+}
+
+func (buffer *ProtoBuff) NextUint16() uint16 {
+	return binary.BigEndian.Uint16(buffer.Next(2))
+}
+
+func (buffer *ProtoBuff) NextUint32() uint32 {
+	return binary.BigEndian.Uint32(buffer.Next(4))
+}
+
+func (buffer *ProtoBuff) NextUint64() uint64 {
+	return binary.BigEndian.Uint64(buffer.Next(8))
+}
+
+func (buffer *ProtoBuff) NextUint16Le() uint16 {
+	return binary.LittleEndian.Uint16(buffer.Next(2))
+}
+
+func (buffer *ProtoBuff) NextUint32Le() uint32 {
+	return binary.LittleEndian.Uint32(buffer.Next(4))
+}
+
+func (buffer *ProtoBuff) NextUint64Le() uint64 {
+	return binary.LittleEndian.Uint64(buffer.Next(8))
 }

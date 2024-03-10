@@ -74,6 +74,10 @@ func (e Ether) BindLayer() Layer {
 		return &ARP{}
 	}
 
+	if e.Type == 0x0800 {
+		return &IP{}
+	}
+
 	return nil
 }
 

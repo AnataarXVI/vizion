@@ -46,6 +46,12 @@ func NewSocket(iface string) *RawSocket {
 		Ifindex:  ifi.Index,
 	}
 
+	err = syscall.Bind(fd, &addr)
+	if err != nil {
+		fmt.Printf("error failed to bind socket: %s", err)
+		return &RawSocket{}
+	}
+
 	return &RawSocket{protocol: protocol, fd: fd, ifi: ifi, addr: &addr}
 }
 

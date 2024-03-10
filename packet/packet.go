@@ -32,8 +32,10 @@ func (p *Packet) Show() {
 		var cache string
 
 		for _, field := range loaded_fields {
+
 			// Check if the field belongs to a Sublayer
 			if !reflect.DeepEqual(field.ParentLayer, buffer.LoadedSubLayer{}) {
+
 				// Store the Sublayer
 				actual_sublayer = field.ParentLayer.LayerName
 
@@ -47,6 +49,8 @@ func (p *Packet) Show() {
 
 				// store the actual Sublayer into a cache
 				cache = actual_sublayer
+
+				//fmt.Println(actual_sublayer, cache)
 
 			} else { // Simple field
 				utils.Display_Fields(field.Name, field.Value, field.Enum)
@@ -177,6 +181,10 @@ func (p *Packet) Dissect() {
 			buffer = *bytes_remaining
 		}
 	}
+
+}
+
+func (p *Packet) DissectFrom() {
 
 }
 
