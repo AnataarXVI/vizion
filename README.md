@@ -30,25 +30,29 @@ import (
 Here is an example of how to create a packet :
 
 ```go
-// Create the packet
-pkt := packet.Packet{}
 
-// Create the Ethernet layer with default values set
-etherLayer := layers.EtherLayer()
-// Modify the Type field of the layer
-etherLayer.Type = 0x0806
+func main() { 
+    // Create the packet
+    pkt := packet.Packet{}
 
-// Create the ARP layer with default values set 
-arpLayer := layers.ARPLayer()
+    // Create the Ethernet layer with default values set
+    etherLayer := layers.EtherLayer()
+    // Modify the Type field of the layer
+    etherLayer.Type = 0x0806
 
-// Add layers to the packet
-pkt.AddLayers(&etherLayer, &arpLayer)
+    // Create the ARP layer with default values set 
+    arpLayer := layers.ARPLayer()
 
-// Show the packet composition
-pkt.Show()
+    // Add layers to the packet
+    pkt.AddLayers(&etherLayer, &arpLayer)
 
-// Send the packet on 'lo' interface
-Send(pkt, "lo")
+    // Show the packet composition
+    pkt.Show()
+
+    // Send the packet on 'lo' interface
+    Send(pkt, "lo")
+}
+
 ```
 
 _Result:_

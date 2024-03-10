@@ -122,15 +122,15 @@ Bytes are inserted for each field in the layer.
 
 ```go
 // Inserts bytes in Hwtype
-a.Hwtype = binary.BigEndian.Uint16(buffer.Next(2))
+a.Hwtype = buffer.NextUint16()
 // Inserts bytes in Ptype
-a.Ptype = binary.BigEndian.Uint16(buffer.Next(2))
+a.Ptype = buffer.NextUint16()
 // Inserts byte in Hwlen
-a.Hwlen = uint8(buffer.Next(1)[0])
+a.Hwlen = buffer.NextUint8()
 // Inserts byte in Plen
-a.Plen = uint8(buffer.Next(1)[0])
+a.Plen = buffer.NextUint8()
 // Inserts bytes in Opcode
-a.Opcode = binary.BigEndian.Uint16(buffer.Next(2))
+a.Opcode = buffer.NextUint16()
 // Inserts bytes in Hwsrc
 a.Hwsrc = buffer.Next(int(a.Hwlen))
 // Inserts bytes in Psrc
