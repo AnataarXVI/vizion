@@ -1,7 +1,6 @@
 package layers
 
 import (
-	"encoding/binary"
 	"net"
 
 	"github.com/AnataarXVI/vizion/buffer"
@@ -62,7 +61,7 @@ func (e *Ether) Build() *buffer.ProtoBuff {
 func (e *Ether) Dissect(buffer *buffer.ProtoBuff) *buffer.ProtoBuff {
 	e.Dst = buffer.Next(6)
 	e.Src = buffer.Next(6)
-	e.Type = binary.BigEndian.Uint16(buffer.Next(2))
+	e.Type = buffer.NextUint16()
 	return buffer
 }
 
@@ -185,11 +184,11 @@ func (a *ARP) Build() *buffer.ProtoBuff {
 }
 
 func (a *ARP) Dissect(buffer *buffer.ProtoBuff) *buffer.ProtoBuff {
-	a.Hwtype = binary.BigEndian.Uint16(buffer.Next(2))
-	a.Ptype = binary.BigEndian.Uint16(buffer.Next(2))
-	a.Hwlen = uint8(buffer.Next(1)[0])
-	a.Plen = uint8(buffer.Next(1)[0])
-	a.Opcode = binary.BigEndian.Uint16(buffer.Next(2))
+	a.Hwtype = buffer.NextUint16()
+	a.Ptype = buffer.NextUint16()
+	a.Hwlen = buffer.NextUint8()
+	a.Plen = buffer.NextUint8()
+	a.Opcode = buffer.NextUint16()
 	a.Hwsrc = buffer.Next(int(a.Hwlen))
 	a.Psrc = buffer.Next(int(a.Plen))
 	a.Hwdst = buffer.Next(int(a.Hwlen))
